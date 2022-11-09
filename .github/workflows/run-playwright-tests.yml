@@ -1,0 +1,40 @@
+name: 🧪 Run Playwright Tests
+
+on:
+  workflow_call:
+    inputs:
+      timeout-minutes:
+        required: false
+        default: 15
+        type: number
+      machine-type:
+        required: false
+        default: ubuntu-latest
+        type: string
+      node-version:
+        required: true
+        type: string
+
+jobs:
+
+  test:
+    timeout-minutes: ${{ inputs.timeout-minutes }}
+    runs-on: ${{ inputs.machine-type }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: ${{ inputs.node-version }}
+      - name: 🖥️ Install dependencies
+        run: npm ci
+      - name: 🌐 Install Playwright Browsers
+        run: npx playwright install --with-deps
+      - name: 🧪 Run Playwright tests
+        run: npx playwright test
+      - uses: actions/upload-artifact@v2
+        if: always()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
