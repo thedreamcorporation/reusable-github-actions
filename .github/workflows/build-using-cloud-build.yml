@@ -1,0 +1,53 @@
+name: 🏗️ Build using Google Cloud Build
+
+on:
+  workflow_call:
+    inputs:
+      gcp_sa_key:
+        required: true
+        type: string
+      gcp_project_id:
+        required: true
+        type: string
+      gcp_build_timeout:
+        required: false
+        default: '600s'
+        type: string
+      gcp_build_config:
+        required: false
+        default: 'cloudbuild.yaml'
+        type: string
+      gcp_build_tag:
+        required: false
+        default: ''
+        type: string
+
+jobs:
+  trigger-google-cloud-build:
+    name: 🏗️ Trigger Google Cloud Build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+    - name: '📃 Checkout'
+      uses: actions/checkout@v3
+
+    - id: 'auth'
+      name: '🔑 Authenticate with GCP'
+      uses: 'google-github-actions/auth@v0'
+      with:
+        credentials_json: '${{ inputs.gcp_sa_key }}'
+
+    - name: '📚 Set up Cloud SDK'
+      uses: google-github-actions/setup-gcloud@v1
+
+    - name: '🏗️ Submit Google Cloud build'
+      run: |-
+        gcloud builds submit \
+          --quiet \
+          --project ${{ inputs.gcp_project_id }} \
+          --timeout ${{ inputs.gcp_build_timeout }} \
+          --config ${{ inputs.gcp_build_config }} \
+          --tag ${{ inputs.gcp_build_tag }} \
