@@ -3,6 +3,9 @@ name: 🚀 Deploy to GCP App Engine
 on:
   workflow_call:
     inputs:
+      gcp_sa_key:
+        required: true
+        type: string
       gcp_service:
         required: false
         default: 'default'
@@ -31,7 +34,7 @@ jobs:
       name: '🔑 Authenticate to GCP'
       uses: 'google-github-actions/auth@v0'
       with:
-        credentials_json: '${{ inputs.GCP_SA_KEY }}'
+        credentials_json: '${{ inputs.gcp_sa_key }}'
       
     - id: 'deploy'
       name: '🚀 Deploy to GCP App Engine'
