@@ -16,7 +16,7 @@ on:
         type: string
       gcp_appengine_deliverables:
         required: false
-        default: 'bundle/app.yaml'
+        default: 'app.yaml'
         type: string
       promote_traffic:
         required: false
