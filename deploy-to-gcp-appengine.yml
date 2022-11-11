@@ -1,0 +1,46 @@
+name: 🚀 Deploy to GCP App Engine
+
+on:
+  workflow_call:
+    inputs:
+      gcp_service:
+        required: false
+        default: 'default'
+        type: string
+      gcp_version:
+        required: false
+        default: null
+        type: string
+      gcp_appengine_deliverables:
+        required: false
+        default: 'bundle/app.yaml'
+        type: string
+      promote_traffic:
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  deploy:
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+    - id: 'auth'
+      name: '🔑 Authenticate to GCP'
+      uses: 'google-github-actions/auth@v0'
+      with:
+        credentials_json: '${{ inputs.GCP_SA_KEY }}'
+      
+    - id: 'deploy'
+      name: '🚀 Deploy to GCP App Engine'
+      uses: 'google-github-actions/deploy-appengine@v0'
+      with:
+        service: '${{ inputs.gcp_service }}'
+        version: '${{ inputs.gcp_version }}'
+        deliverables: '${{ inputs.gcp_appengine_deliverables }}'
+        promote: '${{ inputs.promote_traffic }}'
+
+    - name: '📊 Print GCP App Engine URL'
+      run: 'echo ${{ steps.deploy.outputs.url }}'
